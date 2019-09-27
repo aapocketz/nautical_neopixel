@@ -1,28 +1,33 @@
 /* [Global] */
 
 // Which one would you like to see?
-part = "top"; // [top:Top Only,base:Base Only,both:Top and Base]
+part = "both"; // [top:Top Only,base:Base Only,both:Top and Base]
 
 /* [Top] */
 
 // number of holes for LEDs
-led_count = 5;
+led_count = 10;
 // length of the tube for fiber optics
 tube_height = 10;
 // width of the base (wings at bottom)
-width = 16;
+width = 14;
 // radius of the chamfer to the wings. Larger number is more gradual chamfer.
 chamfer_radius = 3;
 // the height fo the base (wings) on the side. Chamfer radius + wing height must be less than the tube_height
 wing_height = 1.5;
 
+// LED size (ws2812b according to datasheet is 5.0 * 5.4 * 1.57 with a 0.05mm tolerance.)
+led_size = [5.4, 5.6, 1.65];
+
 /* [Base] */
 
 // thickness of the wall for the base
-wall_thickness = 1.5;
+wall_thickness = 2.5;
 
-// fudge factor for clearance issues on the base
-fudge = 0.2;
+// base clearance factor for clearance issues on the base
+clearance = 1;
+// led strip thickness
+strip_thickness = 1;
 
 /* [Hidden] */
 $fn=100;
@@ -69,8 +74,8 @@ module led_top() {
                 }
 
                 // LED slot
-                translate([0, 0, 0.7]) {
-                    cube([5.2, 5.4, 1.41], true);
+                translate([0, 0, led_size[2]/2 - 0.01]) {
+                    cube(led_size, true);
                 }
 
                 // Fiber tube
@@ -81,14 +86,15 @@ module led_top() {
 }
 
 module led_base() {
-    translate([0,0, wall_thickness/2]) {
+    slot_depth = strip_thickness + wing_height;
+    translate([0, 0, wing_height/2]) {
         for (i=[0:led_count-1]) {
             translate([0, 7 * i, 0]) {
                 difference() {
-                    cube([width + wall_thickness*2 + fudge*2, 7, wing_height + wall_thickness*2 + fudge*2], true);
-                    cube([width + fudge*2, 8, wing_height + fudge*2], true);
-                    translate([0, 0, (wing_height + wall_thickness)/2 + fudge]) {
-                        cube([width - fudge*6, 8, wall_thickness + 0.01], true);
+                    cube([width + wall_thickness*2 + clearance*2, 7, slot_depth + wall_thickness*2 + clearance*2], true);
+                    cube([width + clearance*2, 8, slot_depth + clearance*2], true);
+                    translate([0, 0, (slot_depth + wall_thickness)/2 + clearance]) {
+                        cube([width - clearance*2, 8, wall_thickness + 0.01], true);
                     }
                 }
             }
