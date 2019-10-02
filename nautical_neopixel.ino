@@ -22,7 +22,7 @@
 #define LED_PIN    6
 
 // how many LEDs are we using for navigation lights
-#define LED_COUNT 19
+#define LED_COUNT 20
 
 // ms between simulated ticks.
 #define TICK_PERIOD 100
@@ -69,7 +69,8 @@ char* nav_leds[LED_COUNT] = {
                               "Fl (4+3) Y 30s",
                               "Fl Y 2.5s",
                               "Fl Y 4s",
-                              "F Y"
+                              "F Y",
+  							              "Oc (2+1) R 6s"
 };
 
 // shift the phase so the leds are less likely to blink at the same time
@@ -210,6 +211,36 @@ void parse(unsigned int count, int led_idx, char* str) {
       
       flash(count, led_idx, color, group1, group2, period);
     }
+  } else if (str[0] == 'O' and str[1] == 'c') {
+	// occulting
+      // flashing
+      int group1 = 1;
+      int group2 = 0;
+      int period = 100000;
+      if (str[3] == '(' and isdigit(str[4])) {
+        if (str[5] == ')') {
+          // single group flashing
+          group1 = atoi(&str[4]);
+          // offset pointer
+          str += 7;
+        }
+        else if(str[5] == '+' and isdigit(str[6]) and str[7] == ')') {
+          // composite group flashing
+          group1 = atoi(&str[4]);
+          group2 = atoi(&str[6]);
+          // offset pointer
+          str += 9;
+        }
+      }
+      else if (not isdigit(str[3]) and str[4] == ' ') {
+        // offset pointer
+        str += 3;
+      }
+      color = charToColor(str[0]);
+      period = aToPeriod(&str[2]);
+      
+      occult(count, led_idx, color, group1, group2, period);    
+    
   }
   
 }
@@ -238,6 +269,31 @@ void flash(unsigned int count, int led_idx, uint32_t color, int group1, int grou
     }
     if (subframe < group) {
       strip.setPixelColor(led_idx, color);
+    }
+  }
+}
+
+
+// occulting
+void occult(unsigned int count, int led_idx, uint32_t color, int group1, int group2, int period) {
+  
+  count = count % period;
+  strip.setPixelColor(led_idx, color);  
+
+  int subframe = count / QUICK_PERIOD;
+  // determine groupset
+  // assume half the period is for the first grouping
+  int group = group1;
+  if ((count * 2) >= period) {
+    group = group2;
+    count = count % (period / 2);
+    subframe = count / QUICK_PERIOD;
+  }
+  if (subframe < group) {
+    if ((count % QUICK_PERIOD) > FLASH_DURATION) {
+      strip.setPixelColor(led_idx, color);
+    } else {
+      strip.setPixelColor(led_idx, OFF);
     }
   }
 }
