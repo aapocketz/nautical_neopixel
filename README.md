@@ -9,7 +9,7 @@ You can simulate the operation of the arduino and LEDs on Tinkercad Circuit simu
 The chart I printed required over a hundred lighted aids to navigation, some that even printed out in a large format (20x30in) some lateral buoys/marks are spaced closely. I wanted to light them all, so decided to use 1mm fiber optics. This solved the problem with spacing - Neopixels are very small, but even 5050 LEDs are 5mm wide. Since most of the buoys in a given chart will have the same color and timing, you can also multiplex map several fibers fed from a single LED, and even the chart I printed with hundred of lights only required fewer than 20 unique LEDs. By using fewer LEDs and being smarter about power you could also make this project battery powered. 
 
 # SCAD 3D print
-To mate the optical fiber to the LEDs, I designed a coupler that makes it easy to mate the fiber to individual LEDs. This SCAD is customizable and can be accessed directly using thingiverse customizer https://www.thingiverse.com/thing:3883305. 
+To mate the optical fiber to the LEDs, I designed a coupler that makes it easy to mate the fiber to individual LEDs. This SCAD is customizable and can be accessed directly using thingiverse customizer https://www.thingiverse.com/thing:3881790. 
 
 
 # parts and tools required and project assembly
