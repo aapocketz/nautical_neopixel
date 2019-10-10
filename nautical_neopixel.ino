@@ -51,26 +51,26 @@
 
 // these are the nautical lights needed for chart 12270
 char* nav_leds[LED_COUNT] = {
-  						"Fl (4+5) G 30s",
-                              "Fl G 4s",
-                              "Q G",
-                              "Fl G 2.5s",
-                              "Fl (2+1) G 6s",
-                              "Fl G 6s",
-                              "Q R",
-                              "Fl R 2.5",
-                              "Fl R 4s",
-                              "Fl R 6s",
-                              "Fl (2+1) R 6s",
-                              "Fl W 6s",
-                              "Fl W 10s",
-                              "Fl W 4s",
-                              "Fl W 5s",
-                              "Fl (4+3) Y 30s",
-                              "Fl Y 2.5s",
-                              "Fl Y 4s",
-                              "F Y",
-  							              "Oc (2+1) R 6s"
+  "Fl (4+5) G 30s",
+  "Fl G 4s",
+  "Q G",
+  "Fl G 2.5s",
+  "Fl (2+1) G 6s",
+  "Fl G 6s",
+  "Q R",
+  "Fl R 2.5",
+  "Fl R 4s",
+  "Fl R 6s",
+  "Fl (2+1) R 6s",
+  "Fl W 6s",
+  "Fl W 10s",
+  "Fl W 4s",
+  "Fl W 5s",
+  "Fl (4+3) Y 30s",
+  "Fl Y 2.5s",
+  "Fl Y 4s",
+  "F Y",
+  "Oc (2+1) R 6s"
 };
 
 // shift the phase so the leds are less likely to blink at the same time
@@ -241,8 +241,7 @@ void parse(unsigned int count, int led_idx, char* str) {
       
       occult(count, led_idx, color, group1, group2, period);    
     
-  }
-  
+  }  
 }
 
 // fixed color
