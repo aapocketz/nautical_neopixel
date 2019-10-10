@@ -40,9 +40,10 @@ Note: I am not sure I would recommend the samsclub standouts, as they have a har
 
 9. Cover the backing. This is optional, but with loose fiber everywhere it helps encapsulate everything. I glued a black plastic corregated board to the back ($4 at https://www.michaels.com/plastic-corrugated-board-by-creatology/M10567770.html).
 
+## results
 
-
-
+video of chart LEDs flashing: https://youtu.be/PLgCkBzhD6o  
+video of 3D printed LED coupler: https://www.youtube.com/watch?v=q0YkyLGdePY
 
 
 
