@@ -14,12 +14,10 @@ To mate the optical fiber to the LEDs, I designed a coupler that makes it easy t
 
 # parts and tools required and project assembly
 
-1. Frame a nautical chart. Find a nautical chart, and a print service and frame style that will work for you. I went with samsclub photo as they have "standout" prints 20x30in for ~$80. Standout prints are a good option as it is a nice hard surface to drill into to mount the LEDs and have a nice deep frame to hide electronics. To print a nautical chart you can get PDF charts for free from NOAA https://nauticalcharts.noaa.gov/. Keep in mind the aspect ratio is varied with each chart, and you will need to either find a print service that can handle custom sizes or crop/trim the image to fit. To match the modern black standout frame and modern look of LEDs I inverted the image which created an image that was darker and I think goes better with the frame and nautical lights against a dark background at night.
-
-For example this is the image I had printed from chart 12270:
-
-<img src="chesapeake_map_3x2_inverted.jpg" width="200">
-
+1. Frame a nautical chart. Find a nautical chart, and a print service and frame style that will work for you. I went with samsclub photo as they have "standout" prints 20x30in for ~$80. Standout prints are a good option as it is a nice hard surface to drill into to mount the LEDs and have a nice deep frame to hide electronics. To print a nautical chart you can get PDF charts for free from NOAA https://nauticalcharts.noaa.gov/. Keep in mind the aspect ratio is varied with each chart, and you will need to either find a print service that can handle custom sizes or crop/trim the image to fit. To match the modern black standout frame and modern look of LEDs I inverted the image which created an image that was darker and I think goes better with the frame and nautical lights against a dark background at night.\
+\
+For example this is the image I had printed from chart 12270 (warning large image):\
+<img src="chesapeake_map_3x2_inverted.jpg" width="400">\
 Note: I am not sure I would recommend the samsclub standouts, as they have a hard backing and it glued up with styrofoam inside which I didn't realize. To get this project to work I had to cut the backing off and carve out the styrofoam to mount the electronics. It would have been easier with standout frame that had a hollow backing with no solid foam layer. Box mount or canvas mount frames that are hollow in the back may be a better option. 
 
 2. Program the Arduino. I used an Andruino nano board clone from Amazon (a pack of 3 was about $13). https://www.amazon.com/ELEGOO-Arduino-ATmega328P-Without-Compatible/dp/B0713XK923. Figure out the different light sequences you will need for your chart and edit the arduino sketch to include the number of unique LEDs and timing needed.  
