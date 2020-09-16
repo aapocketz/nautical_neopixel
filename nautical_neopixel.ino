@@ -280,6 +280,24 @@ void fixed(unsigned int count, int led_idx, uint32_t color) {
 }
 
 // flashing
+// count: the clock counter in microsec ticks
+// led_idx: the led index
+// on_color: the color of the led when the flash is "on". Note: occulting lights this color could be "OFF"
+// off_color: the color of the led when the flash is "off". Normal lights will have this color be "OFF"
+// group1: the number of flashes during the first half period
+// group2: number of flashes during the second half period
+// on_time: the number of ticks the light is "on" when flashing
+// off_time: the number of ticks the light is "off" when flashing
+// period: the repeat period of the flashes
+
+// example:
+// this is what a group1=2, group2=0, on_time=5, off_time=5, and period of 40 would look like
+// the | represents the period, the {} are groups and the + is when we are on, and the - are when we are off.
+// 
+//             |{+++++-----+++++-----}{--------------------}|
+// 
+// important note! this function currently doesn't do any error checking to make sure values are sane.
+
 void flash(unsigned int count, int led_idx, uint32_t on_color, uint32_t off_color, int group1, int group2, int on_time, int off_time, int period) {
   
   count = count % period;
