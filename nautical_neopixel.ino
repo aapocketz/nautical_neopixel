@@ -74,6 +74,7 @@
 // };
 
 char* nav_leds[LED_COUNT] = {
+  "Iso R 5s",
   "Q G",
   "Q (2) R 10s",
   "Q (2+1) G 10s",
@@ -180,8 +181,14 @@ void parse(unsigned int count, int led_idx, char* str) {
   // ensure the length is something reasonable
   if (len < 2 or len > 30) return;
   
-  // check for quick flashing
-  if (str[0] == 'Q') {
+
+  if (str[0] == 'I' and str[1] == 's' and str[2] == 'o') {
+    // isophase
+    color = charToColor(str[4]);
+		int period = aToPeriod(&str[6]);
+		flash(count, led_idx, color, OFF, 1, 0, period/2, 0, period);
+  }
+  else if (str[0] == 'Q') {
 	  if (str[1] == ' ' and str[2] != '(') {
 		  // quick flashing
 		  color = charToColor(str[2]);
