@@ -76,7 +76,9 @@
 char* nav_leds[LED_COUNT] = {
   "Q G",
   "Q (2) R 10s",
-  "Q (2+1) G 10s"
+  "Q (2+1) G 10s",
+  "Fl R 10s",
+  "Oc G 10s"
 
 };
 
@@ -183,7 +185,7 @@ void parse(unsigned int count, int led_idx, char* str) {
 	  if (str[1] == ' ' and str[2] != '(') {
 		  // quick flashing
 		  color = charToColor(str[2]);
-		  flash(count, led_idx, color, 1, 0, QUICK_PERIOD);
+      flash(count, led_idx, color, OFF, 1, 0, FLASH_DURATION, QUICK_PERIOD-FLASH_DURATION, QUICK_PERIOD);
 	  } else {
 		  // quick group flashing
 		  int group1 = 1;
@@ -206,7 +208,7 @@ void parse(unsigned int count, int led_idx, char* str) {
 		  }
 		  color = charToColor(str[0]);
 		  period = aToPeriod(&str[2]);
-		  flash(count, led_idx, color, group1, group2, period);
+		  flash(count, led_idx, color, OFF, group1, group2, FLASH_DURATION, QUICK_PERIOD-FLASH_DURATION, period);
 	  }
   } else if (str[0] == 'F') {
 	  if (str[1] == ' ') {
@@ -239,7 +241,7 @@ void parse(unsigned int count, int led_idx, char* str) {
 		  color = charToColor(str[0]);
 		  period = aToPeriod(&str[2]);
 
-		  flash(count, led_idx, color, group1, group2, period);
+		  flash(count, led_idx, color, OFF, group1, group2, FLASH_DURATION, FLASH_PERIOD-FLASH_DURATION, period);
 	  }
   } else if (str[0] == 'O' and str[1] == 'c') {
 	  // occulting
@@ -268,7 +270,7 @@ void parse(unsigned int count, int led_idx, char* str) {
 	  color = charToColor(str[0]);
 	  period = aToPeriod(&str[2]);
 
-	  occult(count, led_idx, color, group1, group2, period);
+    flash(count, led_idx, OFF, color, group1, group2, FLASH_DURATION, FLASH_PERIOD-FLASH_DURATION, period);
   }
 }
 
@@ -278,48 +280,28 @@ void fixed(unsigned int count, int led_idx, uint32_t color) {
 }
 
 // flashing
-void flash(unsigned int count, int led_idx, uint32_t color, int group1, int group2, int period) {
+void flash(unsigned int count, int led_idx, uint32_t on_color, uint32_t off_color, int group1, int group2, int on_time, int off_time, int period) {
   
   count = count % period;
+  uint32_t active_color = off_color;
+
+  int sub_period = on_time + off_time;
   
-  if ((count % QUICK_PERIOD) > FLASH_DURATION) {
-    strip.setPixelColor(led_idx, OFF);
+  if ((count % sub_period) > on_time) {
+    active_color = off_color;
   } else {
-    int subframe = count / QUICK_PERIOD;
+    int subframe = count / sub_period;
     // determine groupset
     // assume half the period is for the first grouping
     int group = group1;
     if ((count * 2) >= period) {
       group = group2;
       count = count % (period / 2);
-      subframe = count / QUICK_PERIOD;
+      subframe = count / sub_period;
     }
     if (subframe < group) {
-      strip.setPixelColor(led_idx, color);
+      active_color = on_color;
     }
   }
-}
-
-// occulting
-void occult(unsigned int count, int led_idx, uint32_t color, int group1, int group2, int period) {
-  
-  count = count % period;
-  strip.setPixelColor(led_idx, color);  
-
-  int subframe = count / QUICK_PERIOD;
-  // determine groupset
-  // assume half the period is for the first grouping
-  int group = group1;
-  if ((count * 2) >= period) {
-    group = group2;
-    count = count % (period / 2);
-    subframe = count / QUICK_PERIOD;
-  }
-  if (subframe < group) {
-    if ((count % QUICK_PERIOD) > FLASH_DURATION) {
-      strip.setPixelColor(led_idx, color);
-    } else {
-      strip.setPixelColor(led_idx, OFF);
-    }
-  }
+  strip.setPixelColor(led_idx, active_color);
 }
