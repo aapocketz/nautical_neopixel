@@ -61,6 +61,7 @@
 // };
 
 char* nav_leds[LED_COUNT] = {
+  "L.Fl G 10s",
   "Q R",
   "VQ R",
   "UQ R",
@@ -96,6 +97,11 @@ char* nav_leds[LED_COUNT] = {
 // ultra quick flashing period (flash 240 times a minute)
 #define ULTRA_QUICK_DURATION 125
 #define ULTRA_QUICK_PERIOD 250
+
+// long flashing period (flash 30 times a minute)
+#define LONG_FLASH_DURATION 2000
+#define LONG_FLASH_PERIOD 4000
+
 
 // morse code constants
 char *alpha[] = {
@@ -217,6 +223,11 @@ uint32_t charToColor(char ch) {
 
 // utility function period parsing
 int aToPeriod(char * cstr) {
+  int len = strlen(cstr);
+  if (len > 0 and cstr[len-1] == 's') {
+    // lop off s in string
+    cstr[len-1] = NULL;
+  }
   float seconds = atof(cstr);
   return seconds * 1000;
 }
@@ -370,6 +381,33 @@ void parse(unsigned int count, int led_idx, char* str) {
 
 		  flash(count, led_idx, color, OFF, group1, group2, FLASH_DURATION, FLASH_PERIOD-FLASH_DURATION, period);
 	  }
+  } else if (str[0] == 'L' and str[1] == '.' and str[2] == 'F' and str[3] == 'l') {
+    // flashing
+    int group1 = 1;
+    int group2 = 0;
+    int period = 100000;
+    if (str[5] == '(' and isdigit(str[6])) {
+      if (str[7] == ')') {
+        // single group flashing
+        group1 = atoi(&str[6]);
+        // offset pointer
+        str += 9;
+      } else if (str[7] == '+' and isdigit(str[8]) and
+            str[9] == ')') {
+        // composite group flashing
+        group1 = atoi(&str[6]);
+        group2 = atoi(&str[8]);
+        // offset pointer
+        str += 11;
+      }
+    } else if (not isdigit(str[5]) and str[6] == ' ') {
+      // offset pointer
+      str += 5;
+    }
+    color = charToColor(str[0]);
+    period = aToPeriod(&str[2]);
+
+    flash(count, led_idx, color, OFF, group1, group2, LONG_FLASH_DURATION, LONG_FLASH_PERIOD-LONG_FLASH_DURATION, period);
   } else if (str[0] == 'O' and str[1] == 'c') {
 	  // occulting
 	  // flashing
