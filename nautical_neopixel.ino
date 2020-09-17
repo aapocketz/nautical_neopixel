@@ -61,6 +61,10 @@
 // };
 
 char* nav_leds[LED_COUNT] = {
+  "Q R",
+  "VQ R",
+  "UQ R",
+  "VQ (3) G 5s",
   "Mo (U) R 6s",
   "Iso R 5s",
   "Q G",
@@ -77,13 +81,21 @@ char* nav_leds[LED_COUNT] = {
 
 // flash duration (period light is on during flashing (or off for occulting)
 // duty cycle for normal flash will be FLASH_DURATION/FLASH_PERIOD
-#define FLASH_DURATION 500
-
 // flashing period (flash 30 times a minute)
+#define FLASH_DURATION 500
 #define FLASH_PERIOD 2000
 
-// quick flashing period (flash once a second)
+// quick flashing duration/period (flash 60 times a minute)
+#define QUICK_DURATION 500
 #define QUICK_PERIOD 1000
+
+// very quick flashing period (flash 120 times a minute)
+#define VERY_QUICK_DURATION 250
+#define VERY_QUICK_PERIOD 500
+
+// ultra quick flashing period (flash 240 times a minute)
+#define ULTRA_QUICK_DURATION 125
+#define ULTRA_QUICK_PERIOD 250
 
 // morse code constants
 char *alpha[] = {
@@ -232,7 +244,7 @@ void parse(unsigned int count, int led_idx, char* str) {
 	  if (str[1] == ' ' and str[2] != '(') {
 		  // quick flashing
 		  color = charToColor(str[2]);
-      flash(count, led_idx, color, OFF, 1, 0, FLASH_DURATION, QUICK_PERIOD-FLASH_DURATION, QUICK_PERIOD);
+      flash(count, led_idx, color, OFF, 1, 0, QUICK_DURATION, QUICK_PERIOD-QUICK_DURATION, QUICK_PERIOD);
 	  } else {
 		  // quick group flashing
 		  int group1 = 1;
@@ -255,7 +267,75 @@ void parse(unsigned int count, int led_idx, char* str) {
 		  }
 		  color = charToColor(str[0]);
 		  period = aToPeriod(&str[2]);
-		  flash(count, led_idx, color, OFF, group1, group2, FLASH_DURATION, QUICK_PERIOD-FLASH_DURATION, period);
+		  flash(count, led_idx, color, OFF, group1, group2, QUICK_DURATION, QUICK_PERIOD-QUICK_DURATION, period);
+	  }
+  } else if (str[0] == 'V' and str[1] == 'Q') {
+	  // very quick
+	  if (str[2] == ' ' and str[3] != '(') {
+		  // very quick flashing
+		  color = charToColor(str[3]);
+		  flash(count, led_idx, color, OFF, 1, 0, VERY_QUICK_DURATION,
+			VERY_QUICK_PERIOD - VERY_QUICK_DURATION,
+			VERY_QUICK_PERIOD);
+	  } else {
+		  // very quick group flashing
+		  int group1 = 1;
+		  int group2 = 0;
+		  int period = 100000;
+		  if (str[3] == '(' and isdigit(str[4])) {
+			  if (str[5] == ')') {
+				  // single group flashing
+				  group1 = atoi(&str[4]);
+				  // offset pointer
+				  str += 7;
+			  } else if (str[5] == '+' and isdigit(str[6]) and
+				     str[7] == ')') {
+				  // composite group flashing
+				  group1 = atoi(&str[4]);
+				  group2 = atoi(&str[6]);
+				  // offset pointer
+				  str += 9;
+			  }
+		  }
+		  color = charToColor(str[0]);
+		  period = aToPeriod(&str[2]);
+		  flash(count, led_idx, color, OFF, group1, group2,
+			VERY_QUICK_DURATION,
+			VERY_QUICK_PERIOD - VERY_QUICK_DURATION, period);
+	  }
+  } else if (str[0] == 'U' and str[1] == 'Q') {
+	  // ultra quick
+	  if (str[2] == ' ' and str[3] != '(') {
+		  // ultra quick flashing
+		  color = charToColor(str[3]);
+		  flash(count, led_idx, color, OFF, 1, 0, ULTRA_QUICK_DURATION,
+			ULTRA_QUICK_PERIOD - ULTRA_QUICK_DURATION,
+			ULTRA_QUICK_PERIOD);
+	  } else {
+		  // ultra quick group flashing
+		  int group1 = 1;
+		  int group2 = 0;
+		  int period = 100000;
+		  if (str[3] == '(' and isdigit(str[4])) {
+			  if (str[5] == ')') {
+				  // single group flashing
+				  group1 = atoi(&str[4]);
+				  // offset pointer
+				  str += 7;
+			  } else if (str[5] == '+' and isdigit(str[6]) and
+				     str[7] == ')') {
+				  // composite group flashing
+				  group1 = atoi(&str[4]);
+				  group2 = atoi(&str[6]);
+				  // offset pointer
+				  str += 9;
+			  }
+		  }
+		  color = charToColor(str[0]);
+		  period = aToPeriod(&str[2]);
+		  flash(count, led_idx, color, OFF, group1, group2,
+			ULTRA_QUICK_DURATION,
+			ULTRA_QUICK_PERIOD - ULTRA_QUICK_DURATION, period);
 	  }
   } else if (str[0] == 'F') {
 	  if (str[1] == ' ') {
