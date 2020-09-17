@@ -17,25 +17,12 @@
  #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
 #endif
 
-// Which pin on the Arduino is connected to the NeoPixels?
-// On a Trinket or Gemma we suggest changing this to 1:
-#define LED_PIN    6
-
 // how many LEDs are we using for navigation lights
 #define LED_COUNT 20
 
-// ms between simulated ticks.
-#define TICK_PERIOD 100
-
-// flash duration (period light is on during flashing (or off for occulting)
-// duty cycle for normal flash will be FLASH_DURATION/FLASH_PERIOD
-#define FLASH_DURATION 500
-
-// flashing period (flash 30 times a minute)
-#define FLASH_PERIOD 2000
-
-// quick flashing period (flash once a second)
-#define QUICK_PERIOD 1000
+// Which pin on the Arduino is connected to the NeoPixels?
+// On a Trinket or Gemma we suggest changing this to 1:
+#define LED_PIN    6
 
 // array of char strings
 // these must correspond to NOAA nautical chart 1 specifications for 
@@ -74,6 +61,7 @@
 // };
 
 char* nav_leds[LED_COUNT] = {
+  "Mo (U) R 6s",
   "Iso R 5s",
   "Q G",
   "Q (2) R 10s",
@@ -82,6 +70,56 @@ char* nav_leds[LED_COUNT] = {
   "Oc G 10s"
 
 };
+
+
+// ms between simulated ticks.
+#define TICK_PERIOD 100
+
+// flash duration (period light is on during flashing (or off for occulting)
+// duty cycle for normal flash will be FLASH_DURATION/FLASH_PERIOD
+#define FLASH_DURATION 500
+
+// flashing period (flash 30 times a minute)
+#define FLASH_PERIOD 2000
+
+// quick flashing period (flash once a second)
+#define QUICK_PERIOD 1000
+
+// morse code constants
+char *alpha[] = {
+	".-", //A
+	"-...", //B
+	"-.-.", //C
+	"-..", //D
+	".", //E
+	"..-.", //F
+	"--.", //G
+	"....", //H
+	"..", //I
+	".---", //J
+	"-.-", //K
+	".-..", //L
+	"--", //M
+	"-.", //N
+	"---", //O
+	".--.", //P
+	"--.-", //Q
+	".-.", //R
+	"...", //S
+	"-", //T
+	"..-", //U
+	"...-", //V
+	".--", //W
+	"-..-", //X
+	"-.--", //Y
+	"--.." //Z
+};
+
+#define MORSE_UNIT 500
+#define DOT_TIME 1 * MORSE_UNIT
+#define DASH_TIME 3 * MORSE_UNIT
+#define SPACE_TIME 1 * MORSE_UNIT
+
 
 // shift the phase so the leds are less likely to blink at the same time
 // lowering the max current draw
@@ -125,6 +163,8 @@ void setup() {
   clock_prescale_set(clock_div_1);
 #endif
   // END of Trinket-specific code.
+
+  Serial.begin(9600); // Init serial monitor for debugging
 
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();            // Turn OFF all pixels ASAP
@@ -278,6 +318,16 @@ void parse(unsigned int count, int led_idx, char* str) {
 	  period = aToPeriod(&str[2]);
 
     flash(count, led_idx, OFF, color, group1, group2, FLASH_DURATION, FLASH_PERIOD-FLASH_DURATION, period);
+  } else if (str[0] == 'M' and str[1] == 'o') {
+	  // Morse code
+	  if (str[3] == '(' and str[5] == ')') {
+		  char ch = str[4];
+		  // offset pointer
+		  str += 7;
+		  color = charToColor(str[0]);
+		  int period = aToPeriod(&str[2]);
+		  morse(count, led_idx, color, ch, period);
+	  }
   }
 }
 
@@ -329,4 +379,28 @@ void flash(unsigned int count, int led_idx, uint32_t on_color, uint32_t off_colo
     }
   }
   strip.setPixelColor(led_idx, active_color);
+}
+
+void morse(unsigned int count, int led_idx, uint32_t color, char ch, int period)
+{
+	count = count % period;
+	char *code_str = alpha[ch - 'A'];
+
+	uint32_t active_color = OFF;
+	int on_time = 0;
+	for (int i = 0; i < strlen(code_str); ++i) {
+		char t = code_str[i];
+		int off_time = on_time;
+		if (t == '.') {
+			off_time += DOT_TIME;
+		} else {
+			off_time += DASH_TIME;
+		}
+		if (on_time <= count and count < off_time) {
+			active_color = color;
+			break;
+		}
+		on_time = off_time + SPACE_TIME;
+	}
+	strip.setPixelColor(led_idx, active_color);
 }
