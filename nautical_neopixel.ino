@@ -22,7 +22,7 @@
 
 // Which pin on the Arduino is connected to the NeoPixels?
 // On a Trinket or Gemma we suggest changing this to 1:
-#define LED_PIN    6
+#define LED_PIN 6
 
 // array of char strings
 // these must correspond to NOAA nautical chart 1 specifications for 
@@ -33,8 +33,8 @@
 // 5 green short flashes every 30 seconds
 // NOTE: there are a lot of options for lighted aids, and handlers may 
 // need to be added for types not included here!
-// a good reference is this: https://www.navcen.uscg.gov/pdf/lightlists/LightList_V2_2019.pdf
-
+// a good reference is this:
+// https://www.navcen.uscg.gov/pdf/lightlists/LightList_V2_2019.pdf
 
 // these are the nautical lights needed for chart 12270
 // char* nav_leds[LED_COUNT] = {
@@ -76,7 +76,6 @@ char* nav_leds[LED_COUNT] = {
 
 };
 
-
 // ms between simulated ticks.
 #define TICK_PERIOD 100
 
@@ -102,35 +101,34 @@ char* nav_leds[LED_COUNT] = {
 #define LONG_FLASH_DURATION 2000
 #define LONG_FLASH_PERIOD 4000
 
-
 // morse code constants
 char *alpha[] = {
-	".-", //A
-	"-...", //B
-	"-.-.", //C
-	"-..", //D
-	".", //E
-	"..-.", //F
-	"--.", //G
-	"....", //H
-	"..", //I
-	".---", //J
-	"-.-", //K
-	".-..", //L
-	"--", //M
-	"-.", //N
-	"---", //O
-	".--.", //P
-	"--.-", //Q
-	".-.", //R
-	"...", //S
-	"-", //T
-	"..-", //U
-	"...-", //V
-	".--", //W
-	"-..-", //X
-	"-.--", //Y
-	"--.." //Z
+    ".-",   // A
+    "-...", // B
+    "-.-.", // C
+    "-..",  // D
+    ".",    // E
+    "..-.", // F
+    "--.",  // G
+    "....", // H
+    "..",   // I
+    ".---", // J
+    "-.-",  // K
+    ".-..", // L
+    "--",   // M
+    "-.",   // N
+    "---",  // O
+    ".--.", // P
+    "--.-", // Q
+    ".-.",  // R
+    "...",  // S
+    "-",    // T
+    "..-",  // U
+    "...-", // V
+    ".--",  // W
+    "-..-", // X
+    "-.--", // Y
+    "--.."  // Z
 };
 
 #define MORSE_UNIT 500
@@ -138,13 +136,11 @@ char *alpha[] = {
 #define DASH_TIME 3 * MORSE_UNIT
 #define SPACE_TIME 1 * MORSE_UNIT
 
-
 // shift the phase so the leds are less likely to blink at the same time
 // lowering the max current draw
 // each LED will start its period shifted by phase offset. Set to zero if 
 // you want them blinking simultaneously
 int phase_offset = FLASH_DURATION * 0;
-
 
 // Declare our NeoPixel strip object:
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
@@ -157,20 +153,17 @@ Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 //   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
 //   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 
-
-
 // commonly used nautical light colors
 const uint32_t RED = strip.Color(255, 0, 0);
 const uint32_t GREEN = strip.Color(0, 255, 0);
 const uint32_t YELLOW = strip.Color(255, 255, 0);
 const uint32_t WHITE = strip.Color(127, 127, 127);
-// const uint32_t WHITE = strip.Color(0, 0, 255); // use blue for testing as its more visible than white
+// const uint32_t WHITE = strip.Color(0, 0, 255); // use blue for testing as its
+// more visible than white
 const uint32_t MAGENTA = strip.Color(255, 0, 255);
 const uint32_t OFF = strip.Color(0, 0, 0); 
 
-
 unsigned int global_counter = 0;
-
 
 // setup() function -- runs once at startup --------------------------------
 
@@ -184,11 +177,10 @@ void setup() {
 
   Serial.begin(9600); // Init serial monitor for debugging
 
-  strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
-  strip.show();            // Turn OFF all pixels ASAP
+  strip.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
+  strip.show();  // Turn OFF all pixels ASAP
   // strip.setBrightness(50); // Set BRIGHTNESS to about 1/5 (max = 255)
 }
-
 
 // loop() function -- runs repeatedly as long as board is on ---------------
 
@@ -199,8 +191,8 @@ void loop() {
     parse(counter, led_idx, nav_leds[led_idx]);
     counter += phase_offset;
   }
-  strip.show(); // Update strip with new contents
-  delay(TICK_PERIOD);  // increment tick
+  strip.show();       // Update strip with new contents
+  delay(TICK_PERIOD); // increment tick
   global_counter += TICK_PERIOD;
 }
 
@@ -222,19 +214,18 @@ uint32_t charToColor(char ch) {
 }
 
 // utility function period parsing
-int aToPeriod(char * cstr) {
+int aToPeriod(char *cstr) {
   int len = strlen(cstr);
-  if (len > 0 and cstr[len-1] == 's') {
+  if (len > 0 and cstr[len - 1] == 's') {
     // lop off s in string
-    cstr[len-1] = NULL;
+    cstr[len - 1] = NULL;
   }
   float seconds = atof(cstr);
   return seconds * 1000;
 }
 
 // parse the lighting characteristics string
-void parse(unsigned int count, int led_idx, char* str) {
-  
+void parse(unsigned int count, int led_idx, char *str) {
   // main color
   uint32_t color = MAGENTA;
   
@@ -242,43 +233,33 @@ void parse(unsigned int count, int led_idx, char* str) {
   int len = strlen(str);
   
   // ensure the length is something reasonable
-  if (len < 2 or len > 30) return;
+  if (len < 2 or len > 30)
+    return;
   
-
   if (str[0] == 'I' and str[1] == 's' and str[2] == 'o') {
     // isophase
     color = charToColor(str[4]);
 		int period = aToPeriod(&str[6]);
-		flash(count, led_idx, color, OFF, 1, 0, period/2, 0, period);
-  }
-  else if (str[0] == 'Q') {
+    flash(count, led_idx, color, OFF, 1, 0, period / 2, 0, period);
+  } else if (str[0] == 'Q') {
 	  if (str[1] == ' ' and str[2] != '(') {
 		  // quick flashing
 		  color = charToColor(str[2]);
-      flash(count, led_idx, color, OFF, 1, 0, QUICK_DURATION, QUICK_PERIOD-QUICK_DURATION, QUICK_PERIOD);
+      flash(count, led_idx, color, OFF, 1, 0, QUICK_DURATION,
+            QUICK_PERIOD - QUICK_DURATION, QUICK_PERIOD);
 	  } else {
 		  // quick group flashing
+      // very quick group flashing
 		  int group1 = 1;
 		  int group2 = 0;
 		  int period = 100000;
-		  if (str[2] == '(' and isdigit(str[3])) {
-			  if (str[4] == ')') {
-				  // single group flashing
-				  group1 = atoi(&str[3]);
-				  // offset pointer
-				  str += 6;
-			  } else if (str[4] == '+' and isdigit(str[5]) and
-				     str[6] == ')') {
-				  // composite group flashing
-				  group1 = atoi(&str[3]);
-				  group2 = atoi(&str[5]);
-				  // offset pointer
-				  str += 8;
-			  }
-		  }
+      str += 2;
+      int char_skip = aToGroups(str, group1, group2);
+      str += char_skip;
 		  color = charToColor(str[0]);
 		  period = aToPeriod(&str[2]);
-		  flash(count, led_idx, color, OFF, group1, group2, QUICK_DURATION, QUICK_PERIOD-QUICK_DURATION, period);
+      flash(count, led_idx, color, OFF, group1, group2, QUICK_DURATION,
+            QUICK_PERIOD - QUICK_DURATION, period);
 	  }
   } else if (str[0] == 'V' and str[1] == 'Q') {
 	  // very quick
@@ -286,32 +267,18 @@ void parse(unsigned int count, int led_idx, char* str) {
 		  // very quick flashing
 		  color = charToColor(str[3]);
 		  flash(count, led_idx, color, OFF, 1, 0, VERY_QUICK_DURATION,
-			VERY_QUICK_PERIOD - VERY_QUICK_DURATION,
-			VERY_QUICK_PERIOD);
+            VERY_QUICK_PERIOD - VERY_QUICK_DURATION, VERY_QUICK_PERIOD);
 	  } else {
 		  // very quick group flashing
 		  int group1 = 1;
 		  int group2 = 0;
 		  int period = 100000;
-		  if (str[3] == '(' and isdigit(str[4])) {
-			  if (str[5] == ')') {
-				  // single group flashing
-				  group1 = atoi(&str[4]);
-				  // offset pointer
-				  str += 7;
-			  } else if (str[5] == '+' and isdigit(str[6]) and
-				     str[7] == ')') {
-				  // composite group flashing
-				  group1 = atoi(&str[4]);
-				  group2 = atoi(&str[6]);
-				  // offset pointer
-				  str += 9;
-			  }
-		  }
+      str += 3;
+      int char_skip = aToGroups(str, group1, group2);
+      str += char_skip;
 		  color = charToColor(str[0]);
 		  period = aToPeriod(&str[2]);
-		  flash(count, led_idx, color, OFF, group1, group2,
-			VERY_QUICK_DURATION,
+      flash(count, led_idx, color, OFF, group1, group2, VERY_QUICK_DURATION,
 			VERY_QUICK_PERIOD - VERY_QUICK_DURATION, period);
 	  }
   } else if (str[0] == 'U' and str[1] == 'Q') {
@@ -320,32 +287,18 @@ void parse(unsigned int count, int led_idx, char* str) {
 		  // ultra quick flashing
 		  color = charToColor(str[3]);
 		  flash(count, led_idx, color, OFF, 1, 0, ULTRA_QUICK_DURATION,
-			ULTRA_QUICK_PERIOD - ULTRA_QUICK_DURATION,
-			ULTRA_QUICK_PERIOD);
+            ULTRA_QUICK_PERIOD - ULTRA_QUICK_DURATION, ULTRA_QUICK_PERIOD);
 	  } else {
 		  // ultra quick group flashing
 		  int group1 = 1;
 		  int group2 = 0;
 		  int period = 100000;
-		  if (str[3] == '(' and isdigit(str[4])) {
-			  if (str[5] == ')') {
-				  // single group flashing
-				  group1 = atoi(&str[4]);
-				  // offset pointer
-				  str += 7;
-			  } else if (str[5] == '+' and isdigit(str[6]) and
-				     str[7] == ')') {
-				  // composite group flashing
-				  group1 = atoi(&str[4]);
-				  group2 = atoi(&str[6]);
-				  // offset pointer
-				  str += 9;
-			  }
-		  }
+      str += 3;
+      int char_skip = aToGroups(str, group1, group2);
+      str += char_skip;
 		  color = charToColor(str[0]);
 		  period = aToPeriod(&str[2]);
-		  flash(count, led_idx, color, OFF, group1, group2,
-			ULTRA_QUICK_DURATION,
+      flash(count, led_idx, color, OFF, group1, group2, ULTRA_QUICK_DURATION,
 			ULTRA_QUICK_PERIOD - ULTRA_QUICK_DURATION, period);
 	  }
   } else if (str[0] == 'F') {
@@ -358,84 +311,40 @@ void parse(unsigned int count, int led_idx, char* str) {
 		  int group1 = 1;
 		  int group2 = 0;
 		  int period = 100000;
-		  if (str[3] == '(' and isdigit(str[4])) {
-			  if (str[5] == ')') {
-				  // single group flashing
-				  group1 = atoi(&str[4]);
-				  // offset pointer
-				  str += 7;
-			  } else if (str[5] == '+' and isdigit(str[6]) and
-				     str[7] == ')') {
-				  // composite group flashing
-				  group1 = atoi(&str[4]);
-				  group2 = atoi(&str[6]);
-				  // offset pointer
-				  str += 9;
-			  }
-		  } else if (not isdigit(str[3]) and str[4] == ' ') {
-			  // offset pointer
 			  str += 3;
-		  }
+      int char_skip = aToGroups(str, group1, group2);
+      str += char_skip;
 		  color = charToColor(str[0]);
 		  period = aToPeriod(&str[2]);
-
-		  flash(count, led_idx, color, OFF, group1, group2, FLASH_DURATION, FLASH_PERIOD-FLASH_DURATION, period);
+      flash(count, led_idx, color, OFF, group1, group2, FLASH_DURATION,
+            FLASH_PERIOD - FLASH_DURATION, period);
 	  }
-  } else if (str[0] == 'L' and str[1] == '.' and str[2] == 'F' and str[3] == 'l') {
+  } else if (str[0] == 'L' and str[1] == '.' and str[2] == 'F' and
+             str[3] == 'l') {
     // flashing
     int group1 = 1;
     int group2 = 0;
     int period = 100000;
-    if (str[5] == '(' and isdigit(str[6])) {
-      if (str[7] == ')') {
-        // single group flashing
-        group1 = atoi(&str[6]);
-        // offset pointer
-        str += 9;
-      } else if (str[7] == '+' and isdigit(str[8]) and
-            str[9] == ')') {
-        // composite group flashing
-        group1 = atoi(&str[6]);
-        group2 = atoi(&str[8]);
-        // offset pointer
-        str += 11;
-      }
-    } else if (not isdigit(str[5]) and str[6] == ' ') {
-      // offset pointer
       str += 5;
-    }
+    int char_skip = aToGroups(str, group1, group2);
+    str += char_skip;
     color = charToColor(str[0]);
     period = aToPeriod(&str[2]);
-
-    flash(count, led_idx, color, OFF, group1, group2, LONG_FLASH_DURATION, LONG_FLASH_PERIOD-LONG_FLASH_DURATION, period);
+    flash(count, led_idx, color, OFF, group1, group2, LONG_FLASH_DURATION,
+          LONG_FLASH_PERIOD - LONG_FLASH_DURATION, period);
   } else if (str[0] == 'O' and str[1] == 'c') {
 	  // occulting
 	  // flashing
 	  int group1 = 1;
 	  int group2 = 0;
 	  int period = 100000;
-	  if (str[3] == '(' and isdigit(str[4])) {
-		  if (str[5] == ')') {
-			  // single group flashing
-			  group1 = atoi(&str[4]);
-			  // offset pointer
-			  str += 7;
-		  } else if (str[5] == '+' and isdigit(str[6]) and
-			     str[7] == ')') {
-			  // composite group flashing
-			  group1 = atoi(&str[4]);
-			  group2 = atoi(&str[6]);
-			  // offset pointer
-			  str += 9;
-		  }
-	  } else if (not isdigit(str[3]) and str[4] == ' ') {
-		  // offset pointer
 		  str += 3;
-	  }
+    int char_skip = aToGroups(str, group1, group2);
+    str += char_skip;
 	  color = charToColor(str[0]);
 	  period = aToPeriod(&str[2]);
-
-    flash(count, led_idx, OFF, color, group1, group2, FLASH_DURATION, FLASH_PERIOD-FLASH_DURATION, period);
+    flash(count, led_idx, OFF, color, group1, group2, FLASH_DURATION,
+          FLASH_PERIOD - FLASH_DURATION, period);
   } else if (str[0] == 'M' and str[1] == 'o') {
 	  // Morse code
 	  if (str[3] == '(' and str[5] == ')') {
@@ -448,6 +357,28 @@ void parse(unsigned int count, int led_idx, char* str) {
 	  }
   }
 }
+// determine groups from strings
+// return: number of char consumed
+// group1 and group2 are also return values
+int aToGroups(char *str, int &group1, int &group2) {
+  if (str[0] == '(' and isdigit(str[1])) {
+    if (str[2] == ')') {
+      // single group flashing
+      group1 = atoi(&str[1]);
+      group2 = 0;
+      return 4;
+    } else if (str[2] == '+' and isdigit(str[3]) and str[4] == ')') {
+      // composite group flashing
+      group1 = atoi(&str[1]);
+      group2 = atoi(&str[3]);
+      return 6;
+    }
+  } else {
+    group1 = 1;
+    group2 = 0;
+    return 0;
+  }
+}
 
 // fixed color
 void fixed(unsigned int count, int led_idx, uint32_t color) {
@@ -457,24 +388,27 @@ void fixed(unsigned int count, int led_idx, uint32_t color) {
 // flashing
 // count: the clock counter in microsec ticks
 // led_idx: the led index
-// on_color: the color of the led when the flash is "on". Note: occulting lights this color could be "OFF"
-// off_color: the color of the led when the flash is "off". Normal lights will have this color be "OFF"
-// group1: the number of flashes during the first half period
-// group2: number of flashes during the second half period
-// on_time: the number of ticks the light is "on" when flashing
-// off_time: the number of ticks the light is "off" when flashing
+// on_color: the color of the led when the flash is "on". Note: occulting lights
+// this color could be "OFF" off_color: the color of the led when the flash is
+// "off". Normal lights will have this color be "OFF" group1: the number of
+// flashes during the first half period group2: number of flashes during the
+// second half period on_time: the number of ticks the light is "on" when
+// flashing off_time: the number of ticks the light is "off" when flashing
 // period: the repeat period of the flashes
 
 // example:
-// this is what a group1=2, group2=0, on_time=5, off_time=5, and period of 40 would look like
-// the | represents the period, the {} are groups and the + is when we are on, and the - are when we are off.
+// this is what a group1=2, group2=0, on_time=5, off_time=5, and period of 40
+// would look like the | represents the period, the {} are groups and the + is
+// when we are on, and the - are when we are off.
 // 
 //             |{+++++-----+++++-----}{--------------------}|
 // 
-// important note! this function currently doesn't do any error checking to make sure values are sane.
-
-void flash(unsigned int count, int led_idx, uint32_t on_color, uint32_t off_color, int group1, int group2, int on_time, int off_time, int period) {
+// important note! this function currently doesn't do any error checking to make
+// sure values are sane.
   
+void flash(unsigned int count, int led_idx, uint32_t on_color,
+           uint32_t off_color, int group1, int group2, int on_time,
+           int off_time, int period) {
   count = count % period;
   uint32_t active_color = off_color;
 
@@ -499,8 +433,8 @@ void flash(unsigned int count, int led_idx, uint32_t on_color, uint32_t off_colo
   strip.setPixelColor(led_idx, active_color);
 }
 
-void morse(unsigned int count, int led_idx, uint32_t color, char ch, int period)
-{
+void morse(unsigned int count, int led_idx, uint32_t color, char ch,
+           int period) {
 	count = count % period;
 	char *code_str = alpha[ch - 'A'];
 
