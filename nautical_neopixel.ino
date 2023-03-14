@@ -38,6 +38,8 @@
 // https://www.navcen.uscg.gov/pdf/lightlists/LightList_V2_2019.pdf
 
 // these are the nautical lights needed for chart 12270
+// Chesapeake Bay Eastern Bay and South River; Selby Bay
+// https://www.charts.noaa.gov/OnLineViewer/12270.shtml
 // char* nav_leds[LED_COUNT] = {
 //   "Fl (4+5) G 30s",
 //   "Fl G 4s",
@@ -61,22 +63,48 @@
 //   "Oc (2+1) R 6s"
 // };
 
-char* nav_leds[LED_COUNT] = {
-  "Q (6+LFl) R 15s",
-  "L.Fl G 10s",
-  "Q R",
-  "VQ R",
-  "UQ R",
-  "VQ (3) G 5s",
-  "Mo (U) R 6s",
-  "Iso R 5s",
-  "Q G",
-  "Q (2) R 10s",
-  "Q (2+1) G 10s",
-  "Fl R 10s",
-  "Oc G 10s"
 
+// nautical chart 12283 Annapolis Harbor
+// https://www.charts.noaa.gov/OnLineViewer/12283.shtml
+char* nav_leds[LED_COUNT] = {
+  "Q W",
+  "Q G",
+  // "F M",
+  "Fl (4+5) G 30s",
+  // "F M",
+  "Fl (4+3) Y 30s",
+  // "F M",
+  "Fl R 2.5s",
+  "Fl Y 2.5s",
+  "Fl G 2.5s",
+  // "F M",
+  "Fl R 4s",
+  "Fl Y 4s",
+  // "F M",
+  "Fl R 6s",
+  "Fl W 6s",
+  // "F M",
+  "Fl W 10s"
 };
+
+
+// // test examples
+// char* nav_leds[LED_COUNT] = {
+//   "Q (6+LFl) R 15s",
+//   "L.Fl G 10s",
+//   "Q R",
+//   "VQ R",
+//   "UQ R",
+//   "VQ (3) G 5s",
+//   "Mo (U) R 6s",
+//   "Iso R 5s",
+//   "Q G",
+//   "Q (2) R 10s",
+//   "Q (2+1) G 10s",
+//   "Fl R 10s",
+//   "Oc G 10s"
+
+// };
 // clang-format on
 
 // ms between simulated ticks.
@@ -202,17 +230,17 @@ void loop() {
 // utility function color mapping
 uint32_t charToColor(char ch) {
   switch (ch) {
-    case 'R':
-      return RED;
-    case 'G':
-      return GREEN;
-    case 'Y':
-      return YELLOW;
-    case 'W':
-      return WHITE;
-    default:
-      // magenta may indicate error!
-      return MAGENTA;
+  case 'R':
+    return RED;
+  case 'G':
+    return GREEN;
+  case 'Y':
+    return YELLOW;
+  case 'W':
+    return WHITE;
+  default:
+    // magenta may indicate error!
+    return MAGENTA;
   }
 }
 
@@ -282,7 +310,7 @@ void parse(unsigned int count, int led_idx, char *str) {
       color = charToColor(str[0]);
       period = aToPeriod(&str[2]);
       flash(count, led_idx, color, OFF, group1, group2, VERY_QUICK_DURATION,
-      VERY_QUICK_PERIOD - VERY_QUICK_DURATION, period);
+            VERY_QUICK_PERIOD - VERY_QUICK_DURATION, period);
     }
   } else if (str[0] == 'U' and str[1] == 'Q') {
     // ultra quick
@@ -302,7 +330,7 @@ void parse(unsigned int count, int led_idx, char *str) {
       color = charToColor(str[0]);
       period = aToPeriod(&str[2]);
       flash(count, led_idx, color, OFF, group1, group2, ULTRA_QUICK_DURATION,
-      ULTRA_QUICK_PERIOD - ULTRA_QUICK_DURATION, period);
+            ULTRA_QUICK_PERIOD - ULTRA_QUICK_DURATION, period);
     }
   } else if (str[0] == 'F') {
     if (str[1] == ' ') {
@@ -314,7 +342,7 @@ void parse(unsigned int count, int led_idx, char *str) {
       int group1 = 1;
       int group2 = 0;
       int period = 100000;
-        str += 3;
+      str += 3;
       int char_skip = aToGroups(str, group1, group2);
       str += char_skip;
       color = charToColor(str[0]);
@@ -328,7 +356,7 @@ void parse(unsigned int count, int led_idx, char *str) {
     int group1 = 1;
     int group2 = 0;
     int period = 100000;
-      str += 5;
+    str += 5;
     int char_skip = aToGroups(str, group1, group2);
     str += char_skip;
     color = charToColor(str[0]);
@@ -341,7 +369,7 @@ void parse(unsigned int count, int led_idx, char *str) {
     int group1 = 1;
     int group2 = 0;
     int period = 100000;
-      str += 3;
+    str += 3;
     int char_skip = aToGroups(str, group1, group2);
     str += char_skip;
     color = charToColor(str[0]);
@@ -375,7 +403,8 @@ int aToGroups(char *str, int &group1, int &group2) {
       group1 = atoi(&str[1]);
       group2 = atoi(&str[3]);
       return 6;
-    } else if (str[2] == '+' and str[3] == 'L' and str[4] == 'F' and str[5] == 'l' and str[6] == ')') {
+    } else if (str[2] == '+' and str[3] == 'L' and str[4] == 'F' and
+               str[5] == 'l' and str[6] == ')') {
       // composite group flashing with second group long flash
       group1 = atoi(&str[1]);
       group2 = -1; // use negative values to support long flashes
@@ -390,10 +419,10 @@ int aToGroups(char *str, int &group1, int &group2) {
 
 // fixed color
 void fixed(unsigned int count, int led_idx, uint32_t color) {
-    strip.setPixelColor(led_idx, color);
+  strip.setPixelColor(led_idx, color);
 }
 
- // clang-format off
+// clang-format off
 // flashing
 // controls sequence of led flashes
 //
@@ -424,7 +453,7 @@ void fixed(unsigned int count, int led_idx, uint32_t color) {
 //
 // important note! this function currently doesn't do any error checking to make
 // sure values are sane.
- // clang-format on
+// clang-format on
 
 void flash(unsigned int count, int led_idx, uint32_t on_color,
            uint32_t off_color, int group1, int group2, int on_time,
@@ -454,7 +483,7 @@ void flash(unsigned int count, int led_idx, uint32_t on_color,
   if (subframe < group) {
     active_color = on_color;
   }
- if ((count % sub_period) > on_time) {
+  if ((count % sub_period) > on_time) {
     active_color = off_color;
   }
 
