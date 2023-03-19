@@ -1,6 +1,6 @@
 
 // nautical light display using neopixels
-// author: Aaron Paquette <aapocketz@gmail.com
+// author: Aaron Paquette <aapocketz@gmail.com>
 
 // NEOPIXEL BEST PRACTICES for most reliable operation:
 // - Add 1000 uF CAPACITOR between NeoPixel strip's + and - connections.
@@ -11,11 +11,23 @@
 // - When using a 3.3V microcontroller with a 5V-powered NeoPixel strip,
 //   a LOGIC-LEVEL CONVERTER on the data line is STRONGLY RECOMMENDED.
 // (Skipping these may work OK on your workbench but can fail in the field)
-
 #include <Adafruit_NeoPixel.h>
-#ifdef __AVR__
-#include <avr/power.h> // Required for 16 MHz Adafruit Trinket
+#include <Arduino.h>
+
+// set this to enable avr-stub debugging
+#ifdef DEBUG
+#include "avr8-stub.h"
 #endif
+
+// decl
+void parse(unsigned int count, int led_idx, char *str);
+void flash(unsigned int count, int led_idx, uint32_t on_color,
+           uint32_t off_color, int group1, int group2, int on_time,
+           int off_time, int period);
+void morse(unsigned int count, int led_idx, uint32_t color, char ch,
+           int period);
+void fixed(unsigned int count, int led_idx, uint32_t color);
+int aToGroups(char *str, int &group1, int &group2);
 
 // how many LEDs are we using for navigation lights
 #define LED_COUNT 20
@@ -199,14 +211,10 @@ unsigned int global_counter = 0;
 // setup() function -- runs once at startup --------------------------------
 
 void setup() {
-  // These lines are specifically to support the Adafruit Trinket 5V 16 MHz.
-  // Any other board, you can remove this part (but no harm leaving it):
-#if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
-  clock_prescale_set(clock_div_1);
-#endif
-  // END of Trinket-specific code.
 
-  Serial.begin(9600); // Init serial monitor for debugging
+#ifdef DEBUG
+  debug_init();
+#endif
 
   strip.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();  // Turn OFF all pixels ASAP
