@@ -75,27 +75,24 @@ int aToGroups(char *str, int &group1, int &group2);
 //   "Oc (2+1) R 6s"
 // };
 
-
 // nautical chart 12283 Annapolis Harbor
 // https://www.charts.noaa.gov/OnLineViewer/12283.shtml
 char* nav_leds[LED_COUNT] = {
-  "Q W",
   "Q G",
-  // "F M",
-  "Fl (4+5) G 30s",
-  // "F M",
-  "Fl (4+3) Y 30s",
-  // "F M",
+  "Q W",
+  "Fl R 2.5s",
   "Fl R 2.5s",
   "Fl Y 2.5s",
   "Fl G 2.5s",
-  // "F M",
   "Fl R 4s",
+  "Fl R 4s",
+  "Fl (4+5) G 30s",
+  "Fl G 4s",
+  "Fl G 4s",
+  "Fl (4+3) Y 30s",
   "Fl Y 4s",
-  // "F M",
-  "Fl R 6s",
   "Fl W 6s",
-  // "F M",
+  "Fl R 6s",
   "Fl W 10s"
 };
 
@@ -183,7 +180,7 @@ char *alpha[] = {
 // lowering the max current draw
 // each LED will start its period shifted by phase offset. Set to zero if
 // you want them blinking simultaneously
-int phase_offset = FLASH_DURATION * 0;
+int phase_offset = FLASH_DURATION * 1;
 
 // Declare our NeoPixel strip object:
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
