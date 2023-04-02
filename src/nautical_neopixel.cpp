@@ -176,11 +176,35 @@ char *alpha[] = {
 #define DASH_TIME 3 * MORSE_UNIT
 #define SPACE_TIME 1 * MORSE_UNIT
 
-// shift the phase so the leds are less likely to blink at the same time
-// lowering the max current draw
-// each LED will start its period shifted by phase offset. Set to zero if
-// you want them blinking simultaneously
-int phase_offset = FLASH_DURATION * 1;
+
+// programmable phase offset per LED
+// useful to manage power envelope and keep lights from shining at the same exact time
+// for example here we put red,green, white and yellow so their normal flashes are at different phases
+#define R_PHASE FLASH_DURATION * 0
+#define G_PHASE FLASH_DURATION * 3
+#define W_PHASE FLASH_DURATION * 2
+#define Y_PHASE FLASH_DURATION * 1
+int phase_offsets[LED_COUNT] = {
+  G_PHASE, // "Q G", // these are the Annapolis LED lights
+  W_PHASE, // "Q W",
+  R_PHASE, // "Fl R 2.5s",
+  R_PHASE, // "Fl R 2.5s",
+  Y_PHASE, // "Fl Y 2.5s",
+  G_PHASE, // "Fl G 2.5s",
+  R_PHASE, // "Fl R 4s",
+  R_PHASE, // "Fl R 4s",
+  G_PHASE, // "Fl (4+5) G 30s",
+  G_PHASE, // "Fl G 4s",
+  G_PHASE, // "Fl G 4s",
+  Y_PHASE, // "Fl (4+3) Y 30s",
+  Y_PHASE, // "Fl Y 4s",
+  W_PHASE, // "Fl W 6s",
+  R_PHASE, // "Fl R 6s",
+  W_PHASE // "Fl W 10s"
+};
+
+
+
 
 // Declare our NeoPixel strip object:
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
@@ -197,7 +221,8 @@ Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 const uint32_t RED = strip.Color(255, 0, 0);
 const uint32_t GREEN = strip.Color(0, 255, 0);
 const uint32_t YELLOW = strip.Color(255, 255, 0);
-const uint32_t WHITE = strip.Color(127, 127, 127);
+// const uint32_t WHITE = strip.Color(127, 127, 127);
+const uint32_t WHITE = strip.Color(200, 200, 200);
 // const uint32_t WHITE = strip.Color(0, 0, 255); // use blue for testing as its
 // more visible than white
 const uint32_t MAGENTA = strip.Color(255, 0, 255);
@@ -215,17 +240,16 @@ void setup() {
 
   strip.begin(); // INITIALIZE NeoPixel strip object (REQUIRED)
   strip.show();  // Turn OFF all pixels ASAP
-  // strip.setBrightness(50); // Set BRIGHTNESS to about 1/5 (max = 255)
+  strip.setBrightness(100); // Set BRIGHTNESS to about 1/5 (max = 255)
 }
 
 // loop() function -- runs repeatedly as long as board is on ---------------
 
 void loop() {
   strip.clear();
-  unsigned int counter = global_counter;
   for (int led_idx = 0; led_idx < LED_COUNT; ++led_idx) {
+    unsigned int counter = global_counter + phase_offsets[led_idx];
     parse(counter, led_idx, nav_leds[led_idx]);
-    counter += phase_offset;
   }
   strip.show();       // Update strip with new contents
   delay(TICK_PERIOD); // increment tick
